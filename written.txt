@@ -1,5 +1,7 @@
 Problem 3-4 Ans:
 
+
+
 Problem 3-7 Ans:
 
 If we run "ls" only, the shell will fork a process and exec "ls" to list the contents in the current working directory, and then exit after complete this work. The shell will remain for another command.
@@ -13,7 +15,7 @@ This program can be considered as a loop, and it will run "fork();" for 5 times,
 
 Problem 3-9 Ans:
 
-
+There would be 3 different versions of X; the parent's X would be 20, and the X of the first child create by the first fork would be 10, the other child create by the second fork would be 15.
 
 Problem 3-10 Ans:
 
