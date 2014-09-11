@@ -19,9 +19,8 @@ int main(int argc, char **argv)
 {
 	printf("This is W4118 Homework 1.\n$ ");
 	
-	int cmdEnd = 0;
+	int shellEnd = 0;
 	char delim[1] = " ";
-	int listCount = 0;
 
 	char cmdBuff[SLEN];
 	char * pch[5];
@@ -35,7 +34,7 @@ int main(int argc, char **argv)
    	node *head = NULL;
 	node *prev = NULL;
 
-	do
+	while (shellEnd == 0)
 	{
 		cmdCount = 0;
 		cmdChar = 0;
@@ -76,27 +75,24 @@ int main(int argc, char **argv)
 		/*Command recognition starts.*/
 		if (strcmp(pch[0], "exit") == 0)
 		{
-			printf("User terminate.\n");
-			cmdEnd = 1;
+			printf("COMMAND: User terminate.\n");
+			shellEnd = 1;
+			break;
 		}/*exit function.*/
         
 		else if (strcmp(pch[0], "cd") == 0)
 		{
-			printf("Change directory.\n");
-			printf("Target directory is %s.\n", pch[1]);
+			printf("COMMAND: Change to the directory: %s.\n", pch[1]);
 			
-			int temp = 0;
 			int cd = chdir(pch[1]);
 
 			if (cd == 0)
 			{
-				printf("Current working directory: %s.\n", getcwd(NULL, temp));
-				printf("$ ");
+				printf("Current working directory: %s.\n", getcwd(NULL, 0));
 			}	
 			else if (cd < 0)
 			{
-				printf("Invalid directory.\n");
-				printf("$ ");
+				printf("ERROR: Invalid directory.\n");
 			}
 		}/*cd function.*/
         
@@ -104,7 +100,7 @@ int main(int argc, char **argv)
         	{
         		if (pch[1] != NULL && strcmp(pch[1], "+") == 0)
 			{
-                		printf("Add path %s.\n", pch[2]);
+                		printf("COMMAND: Add path: %s.\n", pch[2]);
                 		
 				current = (node *)malloc(sizeof(node));
                 		if (current == NULL)
@@ -114,8 +110,7 @@ int main(int argc, char **argv)
                 
                 		current->next = NULL;
                 
-                		/*Set-up a new node.*/
-                		current->number = listCount;
+                		/*Setup a new node starts.*/
                 		strncpy(current->pathChar, pch[2], SLEN-1);
 				current->pathChar[SLEN-1] = '\0';
                 
@@ -128,12 +123,11 @@ int main(int argc, char **argv)
                     			prev->next =current;
                 		}/*Point prev to current.*/
                 		prev = current;/*Set prev to current to point next node.*/
-                		++listCount;
-                		/*End of set-up a new node.*/
+                		/*Setup a new node ends.*/
             		}/*Add path.*/
             		else if (pch[1] != NULL && strcmp(pch[1], "-") == 0)
             		{
-                		printf("Delete path %s.\n", pch[2]);
+                		printf("COMMAND: Delete path: %s.\n", pch[2]);
                 		
 				node *temp = NULL;
 				int isInList = 0;
@@ -158,7 +152,7 @@ int main(int argc, char **argv)
 							{
 								isInList = 1;
 								break;
-							}/*End loop if delete the last node.*/
+							}/*Ends loop if delete the last node.*/
 							if (prev->next != NULL)
 							{
 								isInList = 1;
@@ -173,53 +167,92 @@ int main(int argc, char **argv)
 
                 		if (isInList == 0)
                 		{
-                    			printf("Path not found.\n");
+                    			printf("ERROR: Path not found.\n");
                 		}/*If path isn't exits.*/
             		}/*Delete path.*/
 			else
             		{
-                		current = head;
+                		printf("COMMAND: Show all pathes.\n");
+				current = head;
                 		while (current != NULL)
                 		{
-                    			printf("%s: ", current->pathChar);
+                    			printf("%s", current->pathChar);
                     			current = current->next;
+					if (current != NULL)
+					{
+						printf(" : ");
+					}
+					else if (current == NULL) 
+					{
+						break;
+					}
                 		}
 				printf("\n");
             		}/*Show all path.*/
-            		printf("$ ");
         	}/*path function.*/
 		
 		else if (strcmp(pch[0], "ls") == 0)
 		{
-			printf("List contents.\n");
+			printf("COMMAND: List contents.\n");
 			
-			pid_t pid;
-			int status;
-			
-			pid = fork();
+			char filePath[SLEN];
+			int fileFound = 0;
+			FILE * fOpen = NULL;
 
-			if (pid < 0)
+			//printf("Breaker");
+			/*Search for file starts*/
+			current = head;
+			while (current != NULL)
 			{
-				exit(EXIT_FAILURE);
+				strcpy(filePath, current->pathChar);
+				strcat(filePath, pch[0]);
+				fOpen = fopen(filePath, "r");
+				if (fOpen)
+				{
+					fclose(fOpen);
+					fileFound = 1;
+					break;
+				}
+				else
+				{
+					current = current->next;
+				}
 			}
-			if (pid == 0)
+			/*Search for file ends.*/
+
+			if (fileFound)
 			{
-				execl("/bin/ls", pch[0], NULL);
-				pause();
+				pid_t pid;
+				int status;
+
+				pid = fork();
+
+				if (pid < 0)
+				{
+					exit(EXIT_FAILURE);
+				}
+				if (pid == 0)
+				{
+					execl(filePath, pch[0], pch[1], NULL);
+					pause();
+				}
+				if (pid != 0)
+				{
+					waitpid(pid, &status, WUNTRACED);
+				}
 			}
-			if (pid != 0)
+			else
 			{
-				waitpid(pid, &status, WUNTRACED);
+				printf("ERROR: Cannot find ls in directories stored in Path.\n");
 			}
-			printf("$ ");
-		}
+		}/*ls function*/
 
 		else
 		{
-			printf("Invalid command.\n");
-			printf("$ ");	
+			printf("ERROR: Invalid command.\n");	
 		}/*Wrong commands.*/
-
-	}while (cmdEnd == 0);
+		
+		printf("$ ");
+	}
 	return 0;
 }
