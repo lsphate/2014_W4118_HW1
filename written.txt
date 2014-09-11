@@ -1,1 +1,22 @@
-test
+Problem 3-4 Ans:
+
+Problem 3-7 Ans:
+
+If we run "ls" only, the shell will fork a process and exec "ls" to list the contents in the current working directory, and then exit after complete this work. The shell will remain for another command.
+
+In the other hand, if we run "exec ls", the shell process will be replaced by ls process and when ls finishes its work, there would be no more shell waits.
+
+
+Problem 3-8 Ans:
+
+This program can be considered as a loop, and it will run "fork();" for 5 times, so finally when the program runs to the end, there would be 32 processes.
+
+Problem 3-9 Ans:
+
+
+
+Problem 3-10 Ans:
+
+In the Program 1., after the child does val++, printf the val "6", and returns, the parent will also do the same work. So there would be two "6" be print out, one is from child first and another is from parent.
+
+For Program 2., the child would exit in the "else" statement, so only the parent will do the following work to print "6".
