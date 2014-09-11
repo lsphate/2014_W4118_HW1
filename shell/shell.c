@@ -2,6 +2,8 @@
 #include <string.h>
 #include <unistd.h>
 #include <stdlib.h>
+#include <sys/wait.h>
+
 # define SLEN 255
 
 struct node
@@ -100,7 +102,7 @@ int main(int argc, char **argv)
         
         	else if (strcmp(pch[0], "path") == 0)
         	{
-        		if (strcmp(pch[1], "+") == 0)
+        		if (pch[1] != NULL && strcmp(pch[1], "+") == 0)
 			{
                 		printf("Add path %s.\n", pch[2]);
                 		
@@ -129,7 +131,7 @@ int main(int argc, char **argv)
                 		++listCount;
                 		/*End of set-up a new node.*/
             		}/*Add path.*/
-            		else if (strcmp(pch[1], "-") == 0)
+            		else if (pch[1] != NULL && strcmp(pch[1], "-") == 0)
             		{
                 		printf("Delete path %s.\n", pch[2]);
                 		
@@ -174,7 +176,7 @@ int main(int argc, char **argv)
                     			printf("Path not found.\n");
                 		}/*If path isn't exits.*/
             		}/*Delete path.*/
-			else if (strcmp(pch[1], "list") == 0)
+			else
             		{
                 		current = head;
                 		while (current != NULL)
@@ -186,7 +188,32 @@ int main(int argc, char **argv)
             		}/*Show all path.*/
             		printf("$ ");
         	}/*path function.*/
-        
+		
+		else if (strcmp(pch[0], "ls") == 0)
+		{
+			printf("List contents.\n");
+			
+			pid_t pid;
+			int status;
+			
+			pid = fork();
+
+			if (pid < 0)
+			{
+				exit(EXIT_FAILURE);
+			}
+			if (pid == 0)
+			{
+				execl("/bin/ls", pch[0], NULL);
+				pause();
+			}
+			if (pid != 0)
+			{
+				waitpid(pid, &status, WUNTRACED);
+			}
+			printf("$ ");
+		}
+
 		else
 		{
 			printf("Invalid command.\n");
