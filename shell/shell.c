@@ -227,41 +227,45 @@ int main(int argc, const char *argv[])
 		}
 		/*Input ends.*/
 
-		/*Seperate 1 starts.*/
+		/*Seperate by | starts.*/
 		pchCount = 0;
 		cmdPch[pchCount] = strtok(cmdBuff, "|");
 		while (cmdPch[pchCount] != NULL) {
 			++pchCount;
 			cmdPch[pchCount] = strtok(NULL, "|");
 		}
-		/*Seperate 1 ends.*/
+		/*Seperate by | ends.*/
 
 		/*Command recognition starts.*/
 		if (pipeDetected == TRUE) {
 			printf("COMMAND: Pipe detected.\n");
 
-			int *pfd[2 * (pchCount - 1)];
 			/*Number of fd needs.*/
-			int currentPfd[2];
+			int pfd[(2 * pchCount)];
+			int *tempPfd[2];
+			int *cPfd[2];
+			int *nPfd[2];
 			int status;
 			pid_t pid;
 			int ppNo;
 
-			/*Times of pipe command.*/
-			for (ppNo = 0; ppNo < pchCount - 1; ++ppNo) {
-				currentPfd[0] = *pfd[2 * ppNo];
-				currentPfd[1] = *pfd[2 * ppNo + 1];
-
-				if (pipe(currentPfd) < 0)
+			for (ppNo = 0; ppNo < pchCount; ++ppNo) {
+				tempPfd[0] = &pfd[2 * ppNo + 0];
+				tempPfd[1] = &pfd[2 * ppNo + 1];
+				if (pipe(*tempPfd) < 0)
 					printf("ERROR: %s.\n", strerror(errno));
-				/*Create pipe.*/
+			}
 
-				int cmdNo;
+			ppNo = 0;
+			/*Times of pipe command.*/
+			for (ppNo = 0; ppNo < pchCount; ++ppNo) {
+				if (ppNo == 0) {
+					cPfd[0] = &pfd[2 * ppNo + 0];
+					cPfd[1] = &pfd[2 * ppNo + 1];
 
-				for (cmdNo = 0; cmdNo < pchCount; ++cmdNo) {
 					/*Seperate pipe command.*/
 					ppPchCt = 0;
-					ppPch[ppPchCt] = strtok(cmdPch[cmdNo], " ");
+					ppPch[ppPchCt] = strtok(cmdPch[ppNo], " ");
 					while (ppPch[ppPchCt] != NULL) {
 						++ppPchCt;
 						ppPch[ppPchCt] = strtok(NULL, " ");
@@ -270,26 +274,74 @@ int main(int argc, const char *argv[])
 
 					status = 0;
 					pid = fork();
+
 					if (pid < 0) {
 						printf("ERROR: %s.\n", strerror(errno));
-					} else if (pid == 0 && (cmdNo % 2) == 0) {
-						/*Odd command exec by child.*/
-						dup2(currentPfd[1], STDOUT_FILENO);
-						close(currentPfd[1]);
-						close(currentPfd[0]);
+					} else if (pid == 0) {
+						dup2(*cPfd[1], STDOUT_FILENO);
+						close(*cPfd[0]);
+						close(*cPfd[1]);
 						if (ppfsearch() == TRUE)
 							ppexeccmd();
-					} else if (pid == 0 && (cmdNo % 2) == 1) {
-						/*Even command exec by child.*/
-						dup2(currentPfd[0], STDIN_FILENO);
-						close(currentPfd[0]);
-						close(currentPfd[1]);
-						if (ppfsearch() == TRUE)
-							ppexeccmd();
-					} else if (pid != 0 && cmdNo == (pchCount - 1)) {
-						close(currentPfd[0]);
-						close(currentPfd[1]);
+					} else {
 						waitpid(pid, &status, 0);
+					}
+				} else if (ppNo == (pchCount - 1)) {
+					cPfd[0] = &pfd[2 * (ppNo - 1) + 0];
+					cPfd[1] = &pfd[2 * (ppNo - 1) + 1];
+
+					/*Seperate pipe command.*/
+					ppPchCt = 0;
+					ppPch[ppPchCt] = strtok(cmdPch[ppNo], " ");
+					while (ppPch[ppPchCt] != NULL) {
+						++ppPchCt;
+						ppPch[ppPchCt] = strtok(NULL, " ");
+					}
+					/*Seperate pipe command.*/
+
+					status = 0;
+					pid = fork();
+
+					if (pid < 0) {
+						printf("ERROR: %s.\n", strerror(errno));
+					} else if (pid == 0) {
+						dup2(*cPfd[0], STDIN_FILENO);
+						close(*cPfd[1]);
+						close(*cPfd[0]);
+						if (ppfsearch() == TRUE)
+							ppexeccmd();
+					} else {
+						close(*cPfd[0]);
+						close(*cPfd[1]);
+						waitpid(pid, &status, 0);
+					}
+				} else {
+					cPfd[0] = &pfd[2 * (ppNo - 1) + 0];
+					cPfd[1] = &pfd[2 * (ppNo - 1) + 1];
+					nPfd[0] = &pfd[2 * ppNo + 0];
+					nPfd[1] = &pfd[2 * ppNo + 1];
+
+					/*Seperate pipe command.*/
+					ppPchCt = 0;
+					ppPch[ppPchCt] = strtok(cmdPch[ppNo], " ");
+					while (ppPch[ppPchCt] != NULL) {
+						++ppPchCt;
+						ppPch[ppPchCt] = strtok(NULL, " ");
+					}
+					/*Seperate pipe command.*/
+
+					status = 0;
+					pid = fork();
+
+					if (pid < 0) {
+						printf("ERROR: %s.\n", strerror(errno));
+					} else if (pid == 0) {
+						dup2(*cPfd[0], STDIN_FILENO);
+						dup2(*nPfd[1], STDOUT_FILENO);
+						close(*cPfd[1]);
+						close(*cPfd[0]);
+						if (ppfsearch() == TRUE)
+							ppexeccmd();
 					} else {
 						waitpid(pid, &status, 0);
 					}
