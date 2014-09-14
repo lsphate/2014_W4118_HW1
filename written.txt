@@ -1,5 +1,7 @@
 Problem 3-4 Ans:
 
+When a child process ends via "exit", it still remained in the process table only when its exit status be read and executed by "wait" of parent, and the resource of child will be released. Otherwise if the child ends without the parent waits, the resource will be hold.
+cite: en.wikipedia.org/wiki/zombie_process
 
 
 Problem 3-7 Ans:
@@ -11,11 +13,13 @@ In the other hand, if we run "exec ls", the shell process will be replaced by ls
 
 Problem 3-8 Ans:
 
-This program can be considered as a loop, and it will run "fork();" for 5 times, so finally when the program runs to the end, there would be 32 processes.
+This program can be considered as a loop, and it will run "fork();" for 5 times. Each time the forkthem(n) runs, current process will be forked, and n minus by 1. So it will run fork() 5 times and finally when the program runs to the end, there would be 32 processes.
+
 
 Problem 3-9 Ans:
 
 There would be 3 different versions of X; the parent's X would be 20, and the X of the first child create by the first fork would be 10, the other child create by the second fork would be 15.
+
 
 Problem 3-10 Ans:
 
