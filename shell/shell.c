@@ -265,6 +265,8 @@ int dopipe(void)
 				close(*cPfd[1]);
 				if (ppfsearch() == TRUE)
 					ppexeccmd();
+				else
+					exit(0);
 			} else {
 				waitpid(pid, &status, 0);
 			}
@@ -289,6 +291,8 @@ int dopipe(void)
 				close(*cPfd[0]);
 				if (ppfsearch() == TRUE)
 					ppexeccmd();
+				else
+					exit(0);
 			} else {
 				close(*cPfd[0]);
 				close(*cPfd[1]);
@@ -320,6 +324,8 @@ int dopipe(void)
 				close(*nPfd[0]);
 				if (ppfsearch() == TRUE)
 					ppexeccmd();
+				else
+					exit(0);
 			} else {
 				close(*cPfd[1]);
 				close(*cPfd[0]);
@@ -339,7 +345,7 @@ int dupbarcheck(void)
 		if (&cmdBuff[ct] != NULL && ppDetected == TRUE) {
 			if (cmdBuff[ct] == '|'
 			    && cmdBuff[ct] ==  cmdBuff[ct + 1]) {
-				printf("error: no duplicate bar\n");
+				printf("error: invalid pipe command\n");
 				isDup = TRUE;
 			}
 		}

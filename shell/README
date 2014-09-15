@@ -1,8 +1,17 @@
 Code Structure:
 
+	This simple shell contents serveral parts to implement some shell functions.
+	
+	First, it will analysis user's input, and seperate them into commands or arrguments. Once the input has "|", the code will jump to the sepcific for loop to handle the pipe commands, otherwise, it will do the default setting. If there is no default setting tell it to do what, it will search the input command in the directory saved in path varible. If exists than execute it, or tell user itis a invaild command.
+
 Simple Work Flow: 
 
-Details on design choice, especially those not cleary stated in requirements
+	User Input > Input analysis > handle commands with pipe > use for loop to solve pipe.
+				    > handle commands without pipe > search and execute.
+
+Details on design choice:
+
+	In my 
 
 error handling
 
