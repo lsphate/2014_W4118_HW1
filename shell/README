@@ -1,18 +1,61 @@
 Code Structure:
 
-	This simple shell contents serveral parts to implement some shell functions.
+This simple shell contents several parts to implement some shell functions.
 	
-	First, it will analysis user's input, and seperate them into commands or arrguments. Once the input has "|", the code will jump to the sepcific for loop to handle the pipe commands, otherwise, it will do the default setting. If there is no default setting tell it to do what, it will search the input command in the directory saved in path varible. If exists than execute it, or tell user itis a invaild command.
+First, it will analysis user's input, and separate them into commands or arguments. Once the input has "|", the code will jump to the specific for loop to handle the pipe commands, otherwise, it will do the default setting. If there is no default setting tell it to do what, it will search the input command in the directory saved in path variable. If exists than execute it, or tell user it is a invalid command.
 
 Simple Work Flow: 
 
-	User Input > Input analysis > handle commands with pipe > use for loop to solve pipe.
-				    > handle commands without pipe > search and execute.
+User Input > Input analysis > handle commands with pipe > use for loop to solve pipe.
+			    > handle commands without pipe > search and execute
 
-Details on design choice:
+Test run:
 
-	In my 
+This is a test of my pipe function:
 
-error handling
+$path + /bin
+$ls|wc
+error: file not found
+$path + /usr/bin
+$path
+/bin:/usr/bin
+$ls|wc
+       1       1      14
+$|wc
+error: invalid pipe command
+$ls|
+error: invalid pipe command
+$ls||wc
+error: invalid pipe command
+$ls | wc
+       1       1      14
+$ls| |wc
+error: invalid pipe command
+$ls|wc|wc
+       1       3      25
+$
 
-a complete test run
+And other tests:
+
+$path + /bin
+$path
+/bin
+$path + /usr/bin
+$path
+/bin:/usr/bin
+$path - /bin
+$path
+/usr/bin
+$path -
+error: no indicated path
+$path +
+error: no indicated path
+$path
+/usr/bin
+$cd 
+error: Bad address
+$cd ..
+$ls
+shell		written.txt
+$  	exit
+

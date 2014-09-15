@@ -247,14 +247,18 @@ int dopipe(void)
 		if (ppNo == 0) {
 			cPfd[0] = &pfd[2 * ppNo + 0];
 			cPfd[1] = &pfd[2 * ppNo + 1];
-			/*Seperate pipe command.*/
+			/*Separate pipe command.*/
 			ppPchCt = 0;
 			ppPch[ppPchCt] = strtok(cmdPch[ppNo], " ");
 			while (ppPch[ppPchCt] != NULL) {
 				++ppPchCt;
 				ppPch[ppPchCt] = strtok(NULL, " ");
 			}
-			/*Seperate pipe command.*/
+			/*Separate pipe command.*/
+			if (ppPch[0] == NULL) {
+				printf("error: invalid pipe command\n");
+				break;
+			}
 			status = 0;
 			pid = fork();
 			if (pid < 0) {
@@ -273,14 +277,18 @@ int dopipe(void)
 		} else if (ppNo == (pchCount - 1)) {
 			cPfd[0] = &pfd[2 * (ppNo - 1) + 0];
 			cPfd[1] = &pfd[2 * (ppNo - 1) + 1];
-			/*Seperate pipe command.*/
+			/*Separate pipe command.*/
 			ppPchCt = 0;
 			ppPch[ppPchCt] = strtok(cmdPch[ppNo], " ");
 			while (ppPch[ppPchCt] != NULL) {
 				++ppPchCt;
 				ppPch[ppPchCt] = strtok(NULL, " ");
 			}
-			/*Seperate pipe command.*/
+			/*Separate pipe command.*/
+			if (ppPch[0] == NULL) {
+				printf("error: invalid pipe command\n");
+				break;
+			}
 			status = 0;
 			pid = fork();
 			if (pid < 0) {
@@ -303,14 +311,18 @@ int dopipe(void)
 			cPfd[1] = &pfd[2 * (ppNo - 1) + 1];
 			nPfd[0] = &pfd[2 * ppNo + 0];
 			nPfd[1] = &pfd[2 * ppNo + 1];
-			/*Seperate pipe command.*/
+			/*Separate pipe command.*/
 			ppPchCt = 0;
 			ppPch[ppPchCt] = strtok(cmdPch[ppNo], " ");
 			while (ppPch[ppPchCt] != NULL) {
 				++ppPchCt;
 				ppPch[ppPchCt] = strtok(NULL, " ");
 			}
-			/*Seperate pipe command.*/
+			/*Separate pipe command.*/
+			if (ppPch[0] == NULL) {
+				printf("error: invalid pipe command\n");
+				break;
+			}
 			status = 0;
 			pid = fork();
 			if (pid < 0) {
@@ -366,7 +378,8 @@ int main(int argc, const char *argv[])
 		if (cmdFirst == '|')
 			ppDetected = TRUE;
 		if (cmdFirst == '\t')
-			cmdFirst = '\0';
+			cmdCount = cmdCount - 1;
+
 		if (cmdFirst == '\n') {
 			continue;
 		} else {
@@ -388,28 +401,28 @@ int main(int argc, const char *argv[])
 		if (dupbarcheck() == TRUE)
 			continue;
 
-		/*Seperate by | starts.*/
+		/*Separate by | starts.*/
 		pchCount = 0;
 		cmdPch[pchCount] = strtok(cmdBuff, "|");
 		while (cmdPch[pchCount] != NULL) {
 			++pchCount;
 			cmdPch[pchCount] = strtok(NULL, "|");
 		}
-		/*Seperate by | ends.*/
+		/*Separate by | ends.*/
 
 		/*Command recognition starts.*/
 		if (ppDetected == TRUE) {
 			shellEnd = dopipe();
 		} else {
 			/*No pipe commands.*/
-			/*Seperate by space starts.*/
+			/*Separate by space starts.*/
 			pchCount = 0;
 			cmdPch[pchCount] = strtok(cmdBuff, " ");
 			while (cmdPch[pchCount] != NULL) {
 				++pchCount;
 				cmdPch[pchCount] = strtok(NULL, " ");
 			}
-			/*Seperate by space ends.*/
+			/*Separate by space ends.*/
 
 			if (cmdPch[0] != NULL) {
 				if (strcmp(cmdPch[0], "exit") == 0) {
