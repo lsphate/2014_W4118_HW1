@@ -1,3 +1,26 @@
+Problem 1-8 Ans:
+
+If I need to run a full-function OS on the other OS, the most important thing would be how I can get the control to the hardware. So the system should be able to provide the access to the hardware for the application OS. That is, the original OS should present an illusion  of the machine to the guest OS, the disks, memories, I/O, and also CPU. This is the so-called “virtual machine”. The benefit of VM is portable, easy to restore and easy to debug.
+
+Problem 1-13 Ans:
+
+My priority shows follow:
+Security > reliability > performance > adoption >portability
+
+For ant OS, the security should be the first priority because OS is the core of a devices and once if the core is been hacked, all the other applications runs on it would also be exposed to a dangerous environment. Then the reliability is the key point for the daily use OS, it couldn’t crush or hang very often. As the OS is the core of a device, the performance of OS is close relative to other apps base on it. Actually adoption is also very important, but the main hardware wouldn’t change that fast. And the last is the portability, once the OS is setup in a device, it should be rare to move the whole OS to another device.
+
+Problem 3-1 Ans:
+
+UNIX fork can return an error by return an integer to describe whether the fork result is successful or not. If successes, it will return 0 for child process or process ID of child for parent; otherwise, it will return  -1 if fork fails.
+
+Problem 3-2 Ans:
+
+UNIX exec can return an error by return an integer. If exec fails, it will return -1 and an errno (error number) will be put; otherwise if exec successes nothing will be returned.
+
+Problem 3-3 Ans:
+
+Each time the program runs into the while loop it will fork both the parent (expects first time), so the number of processes will grow up in 2^n.
+
 Problem 3-4 Ans:
 
 When a child process ends via "exit", it still remained in the process table only when its exit status be read and executed by "wait" of parent, and the resource of child will be released. Otherwise if the child ends without the parent waits, the resource will be hold.
@@ -18,7 +41,7 @@ This program can be considered as a loop, and it will run "fork();" for 5 times.
 
 Problem 3-9 Ans:
 
-There would be 3 different versions of X; the parent's X would be 20, and the X of the first child create by the first fork would be 10, the other child create by the second fork would be 15.
+There would be 3 different versions of X; the X of parent would be 20, and the X of the first child create by the first fork would be 10, the other child create by the second fork would be 15.
 
 
 Problem 3-10 Ans:
